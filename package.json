@@ -1,0 +1,17 @@
+{
+  "name": "binance_trade",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "loveforever0."
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@binance/connector": "^3.3.0"
+  }
+}
