@@ -323,19 +323,22 @@ function borrow_sell_btc(sell_amount) {
           autoRepayAtCancel: true
         }
       ).then(response => {
-        const result = response.data
-        if(result.status == 'FILLED'){
-            isOperated = false
-            if(sell_amount > spot_btc_amount){
-                borrow_time = Date.now()
-                borrow_btc_amount += sell_amount - spot_btc_amount
-                spot_btc_amount = 0
-            }else{
-                spot_btc_amount -= sell_amount
+            const result = response.data
+            if(result.status == 'FILLED'){
+                isOperated = false
+                if(sell_amount > spot_btc_amount){
+                    borrow_time = Date.now()
+                    borrow_btc_amount += sell_amount - spot_btc_amount
+                    spot_btc_amount = 0
+                }else{
+                    spot_btc_amount -= sell_amount
+                }
             }
-        }
-    })
-        .catch(error => client.logger.error(error))
+        })
+        .catch(error => {
+            isOperated = false
+            client.logger.error(error)
+        })
 }
 
 // 普通模式买
@@ -351,13 +354,16 @@ function buy_btc(buy_amount) {
           sideEffectType: 'NO_SIDE_EFFECT',
         }
       ).then(response => {
-        const result = response.data
-        if(result.status == 'FILLED'){
+            const result = response.data
+            if(result.status == 'FILLED'){
+                isOperated = false
+                spot_btc_amount += buy_amount;
+            }
+        })
+        .catch(error => {
             isOperated = false
-            spot_btc_amount += buy_amount;
-        }
-    })
-        .catch(error => client.logger.error(error))
+            client.logger.error(error)
+        })
 }
 
 // 普通模式卖
@@ -373,13 +379,16 @@ function sell_btc(sell_amount) {
           sideEffectType: 'NO_SIDE_EFFECT',
         }
       ).then(response => {
-        const result = response.data
-        if(result.status == 'FILLED'){
+            const result = response.data
+            if(result.status == 'FILLED'){
+                isOperated = false
+                spot_btc_amount -= sell_amount;
+            }
+        })
+        .catch(error => {
             isOperated = false
-            spot_btc_amount -= sell_amount;
-        }
-    })
-        .catch(error => client.logger.error(error))
+            client.logger.error(error)
+        })
 }
 
 function repay_buy_btc(buy_amount) {  // 自动还款模式
@@ -394,15 +403,18 @@ function repay_buy_btc(buy_amount) {  // 自动还款模式
           sideEffectType: 'AUTO_REPAY',
         }
       ).then(response => {
-        const result = response.data
-        if(result.status == 'FILLED'){
+            const result = response.data
+            if(result.status == 'FILLED'){
+                isOperated = false
+                spot_btc_amount += buy_amount - borrow_btc_amount;
+                borrow_time = 0;
+                borrow_btc_amount = 0;
+            }
+        })
+        .catch(error => {
             isOperated = false
-            spot_btc_amount += buy_amount - borrow_btc_amount;
-            borrow_time = 0;
-            borrow_btc_amount = 0;
-        }
-    })
-        .catch(error => client.logger.error(error))
+            client.logger.error(error)
+        })
 }
 
 function hand_repay_btc(repay_amount) {
@@ -411,20 +423,23 @@ function hand_repay_btc(repay_amount) {
         'BTC',
         (repay_amount + 0.001)
       ).then(response => {
-        isOperated = false
-        if(borrow_btc_amount > spot_btc_amount){
-            borrow_btc_amount -= spot_btc_amount
-            if(borrow_btc_amount == 0){
+            isOperated = false
+            if(borrow_btc_amount > spot_btc_amount){
+                borrow_btc_amount -= spot_btc_amount
+                if(borrow_btc_amount == 0){
+                    borrow_time = 0
+                }
+                spot_btc_amount = 0
+            }else{
+                spot_btc_amount -= borrow_btc_amount
+                borrow_btc_amount = 0
                 borrow_time = 0
             }
-            spot_btc_amount = 0
-        }else{
-            spot_btc_amount -= borrow_btc_amount
-            borrow_btc_amount = 0
-            borrow_time = 0
-        }
-    })
-        .catch(error => client.logger.error(error))
+        })
+        .catch(error => {
+            isOperated = false
+            client.logger.error(error)
+        })
 }
 
 
