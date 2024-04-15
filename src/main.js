@@ -1,5 +1,9 @@
 const { Console } = require('console')
 require('dotenv').config()
+const fs = require("fs");
+
+const filePath = 'src/errorLog.json'
+
 const WebsocketStream = require('./websocketStream')
 const logger = new Console({ stdout: process.stdout, stderr: process.stderr })
 const WebsocketAPI = require('./websocketAPI')
@@ -18,9 +22,9 @@ const unit_1_btc_amount = 0.001
 const unit_2_btc_amount = unit_1_btc_amount * 2
 let history_close_prices = []
 
-let borrow_time = 0
+let borrow_time = 1713165359095
 
-let borrow_btc_amount = 0
+let borrow_btc_amount = unit_1_btc_amount
 let spot_btc_amount = 0
 let spot_usdt_amount = 10000
 
@@ -106,7 +110,7 @@ function run() {
 }
 
 function makeOrder(r6, r12, r24, now_price) {
-    if(r6 > r12 && r12 > (r24 + 1)){  // 改成多方向
+    if(r6 > r12 && r12 > (r24 + 0.5)){  // 改成多方向
         console.log("r6 > r12 > r24, long!!")
         
         // 已经拥有现货，不进行额外操作
@@ -144,7 +148,7 @@ function makeOrder(r6, r12, r24, now_price) {
             }
         }
 
-    } else if (r6 < r12 && r12 < (r24 - 1)) {  // 改成空方向
+    } else if (r6 < r12 && r12 < (r24 - 0.5)) {  // 改成空方向
         console.log("r6 < r12 < r24, short!!")
 
         // 借款1单位 现货0单位，不进行额外操作
@@ -337,7 +341,7 @@ function borrow_sell_btc(sell_amount) {
         })
         .catch(error => {
             isOperated = false
-            client.logger.error(error)
+            writeLog(error)
         })
 }
 
@@ -362,7 +366,7 @@ function buy_btc(buy_amount) {
         })
         .catch(error => {
             isOperated = false
-            client.logger.error(error)
+            writeLog(error)
         })
 }
 
@@ -387,7 +391,7 @@ function sell_btc(sell_amount) {
         })
         .catch(error => {
             isOperated = false
-            client.logger.error(error)
+            writeLog(error)
         })
 }
 
@@ -413,7 +417,7 @@ function repay_buy_btc(buy_amount) {  // 自动还款模式
         })
         .catch(error => {
             isOperated = false
-            client.logger.error(error)
+            writeLog(error)
         })
 }
 
@@ -438,11 +442,20 @@ function hand_repay_btc(repay_amount) {
         })
         .catch(error => {
             isOperated = false
-            client.logger.error(error)
+            writeLog(error)
         })
 }
 
+function writeLog(error) {
+    let logjson = JSON.parse(fs.readFileSync(filePath));
 
+    const time = Date.now()
+    let record = {"time": time,"error": error}
+
+    logjson.log.push(record)
+
+    fs.writeFileSync(filePath, JSON.stringify(logjson));
+}
 // buy_btc()
 
 // sell_btc(0.00099)
