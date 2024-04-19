@@ -22,9 +22,9 @@ const unit_1_btc_amount = 0.001
 const unit_2_btc_amount = unit_1_btc_amount * 2
 let history_close_prices = []
 
-let borrow_time = 1713165359095
+let borrow_time = 0
 
-let borrow_btc_amount = unit_1_btc_amount
+let borrow_btc_amount = 0
 let spot_btc_amount = 0
 let spot_usdt_amount = 10000
 
