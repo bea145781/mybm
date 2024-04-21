@@ -110,7 +110,7 @@ function run() {
 }
 
 function makeOrder(r6, r12, r24, now_price) {
-    if(r6 > r12 && r12 > (r24 + 1)){  // 改成多方向
+    if(r6 > r12 && r12 > (r24 + 0.2)){  // 改成多方向
         console.log("r6 > r12 > r24, long!!")
         
         // 已经拥有现货，不进行额外操作
@@ -148,7 +148,7 @@ function makeOrder(r6, r12, r24, now_price) {
             }
         }
 
-    } else if (r6 < r12 && r12 < (r24 - 1)) {  // 改成空方向
+    } else if (r6 < r12 && r12 < (r24 - 0.2)) {  // 改成空方向
         console.log("r6 < r12 < r24, short!!")
 
         // 借款1单位 现货0单位，不进行额外操作
