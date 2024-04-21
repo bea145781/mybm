@@ -28,9 +28,9 @@ let borrow_btc_amount = 0
 let spot_btc_amount = 0
 let spot_usdt_amount = 10000
 
-// getHistoryKlines();
+getHistoryKlines();
 
-// setTimeout(() => run(), 12000)
+setTimeout(() => run(), 12000)
 
 function getHistoryKlines() {
     const callbacks = {
