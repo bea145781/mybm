@@ -28,9 +28,9 @@ let borrow_btc_amount = 0
 let spot_btc_amount = 0
 let spot_usdt_amount = 10000
 
-getHistoryKlines();
+// getHistoryKlines();
 
-setTimeout(() => run(), 12000)
+// setTimeout(() => run(), 12000)
 
 function getHistoryKlines() {
     const callbacks = {
@@ -66,7 +66,7 @@ function run() {
             // 检查是否拿着现货btc还没有还清btc欠款，且在一小时的最后3分钟内
             if(borrow_btc_amount > 0){
                 const minute = (now_time - borrow_time) / 60000 % 60
-                if(57 < minute && minute < 59){
+                if(0 < minute && minute < 59){
                     if(spot_btc_amount > 0){
                         if(!isOperated){
                             console.log("# hand_repay_btc")
@@ -110,7 +110,7 @@ function run() {
 }
 
 function makeOrder(r6, r12, r24, now_price) {
-    if(r6 > r12 && r12 > (r24 + 0.5)){  // 改成多方向
+    if(r6 > r12 && r12 > (r24 + 1)){  // 改成多方向
         console.log("r6 > r12 > r24, long!!")
         
         // 已经拥有现货，不进行额外操作
@@ -134,7 +134,7 @@ function makeOrder(r6, r12, r24, now_price) {
             if(!isOperated){
                 const minute = (Date.now() - borrow_time) / 60000 % 60
                 // 检查是否在借贷一小时的最后3分钟内，如果是则，采用自动还款的购买btc方式
-                if(57 < minute && minute < 59){ // 自动还款模式
+                if(0 < minute && minute < 59){ // 自动还款模式
                     console.log("借1 现0 还款买2")
                     isOperated = true
                     repay_buy_btc(unit_2_btc_amount)
@@ -148,7 +148,7 @@ function makeOrder(r6, r12, r24, now_price) {
             }
         }
 
-    } else if (r6 < r12 && r12 < (r24 - 0.5)) {  // 改成空方向
+    } else if (r6 < r12 && r12 < (r24 - 1)) {  // 改成空方向
         console.log("r6 < r12 < r24, short!!")
 
         // 借款1单位 现货0单位，不进行额外操作
